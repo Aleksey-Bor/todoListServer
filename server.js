@@ -14,7 +14,6 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      console.log(origin);
       if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
@@ -84,6 +83,7 @@ app.delete("/todo-lists/:id", (req, res) => {
   });
 });
 
-app.listen(3001, () => {
-  console.log("Server is running on port 3001");
+const port = process.env.PORT || 3001;
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
