@@ -4,12 +4,19 @@ const bodyParser = require("body-parser");
 const { v1: uuidv1 } = require("uuid");
 
 const app = express();
+app.options("*", cors());
 
-const allowedOrigins = ["http://localhost:3000", "http://localhost:6006", "http://192.168.100.4:6006"];
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:6006",
+  "http://192.168.100.4:6006",
+  "https://www.getpostman.com",
+];
 
 app.use(
   cors({
     origin: (origin, callback) => {
+      console.log(origin);
       if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
@@ -36,6 +43,24 @@ app.post("/todo-lists", (req, res) => {
 
   res.json({
     data: { ...newItem },
+  });
+});
+
+app.put("/todo-lists/:id", (req, res) => {
+  const { id } = req.params;
+  const { title } = req.body;
+
+  const foundItemIndex = todoLists.findIndex((item) => item.id === id);
+
+  if (foundItemIndex === -1) {
+    return res.status(404).json({ message: "Task not found" });
+  }
+
+  const updatedItem = { ...todoLists[foundItemIndex], title };
+  todoLists[foundItemIndex] = updatedItem;
+
+  res.json({
+    data: { ...updatedItem },
   });
 });
 
