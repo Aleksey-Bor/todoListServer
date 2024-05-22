@@ -4,13 +4,11 @@ const bodyParser = require("body-parser");
 const { v1: uuidv1 } = require("uuid");
 
 const app = express();
-app.options("*", cors());
 
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:6006",
   "http://192.168.100.4:6006",
-  "https://www.getpostman.com",
 ];
 
 app.use(
@@ -61,6 +59,28 @@ app.put("/todo-lists/:id", (req, res) => {
 
   res.json({
     data: { ...updatedItem },
+  });
+});
+
+app.delete("/todo-lists/:id", (req, res) => {
+  const { id } = req.params;
+
+  const foundItemIndex = todoLists.findIndex((item) => item.id === id);
+
+  if (foundItemIndex === -1) {
+    return res.status(404).json({
+      resultCode: 1,
+      messages: ["Task not found"],
+      data: {},
+    });
+  }
+
+  const deletedItem = todoLists.splice(foundItemIndex, 1)[0];
+
+  res.json({
+    resultCode: 0,
+    messages: ["TodoList successfully deleted"],
+    data: { ...deletedItem },
   });
 });
 
