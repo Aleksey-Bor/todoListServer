@@ -5,7 +5,7 @@ const { v1: uuidv1 } = require("uuid");
 
 const app = express();
 
-const allowedOrigins = ["http://localhost:3000", "http://localhost:6006"];
+const allowedOrigins = ["http://localhost:3000", "http://localhost:6006", "http://192.168.100.4:6006"];
 
 app.use(
   cors({
