@@ -35,6 +35,10 @@ app.post("/todo-lists", (req, res) => {
   const { title } = req.body;
   const newId = uuidv1();
 
+  if (title.length > 100) {
+    return res.status(400).json({ message: "Title should not exceed 100 characters" });
+  }
+
   const newItem = { id: newId, title, filter: "all" };
   todoLists.unshift(newItem);
 
@@ -46,6 +50,10 @@ app.post("/todo-lists", (req, res) => {
 app.put("/todo-lists/:id", (req, res) => {
   const { id } = req.params;
   const { title } = req.body;
+
+  if (title.length > 100) {
+    return res.status(400).json({ message: "Title should not exceed 100 characters" });
+  }
 
   const foundItemIndex = todoLists.findIndex((item) => item.id === id);
 
@@ -87,3 +95,4 @@ const port = process.env.PORT || 3001;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
