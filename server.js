@@ -25,6 +25,7 @@ app.use(
 
 app.use(bodyParser.json());
 
+//Обработка запросов для todoLists
 const todoLists = [];
 
 app.get("/todo-lists", (req, res) => {
@@ -36,7 +37,9 @@ app.post("/todo-lists", (req, res) => {
   const newId = uuidv1();
 
   if (title.length > 100) {
-    return res.status(400).json({ message: "Title should not exceed 100 characters" });
+    return res
+      .status(400)
+      .json({ message: "Title should not exceed 100 characters" });
   }
 
   const newItem = { id: newId, title, filter: "all" };
@@ -52,7 +55,9 @@ app.put("/todo-lists/:id", (req, res) => {
   const { title } = req.body;
 
   if (title.length > 100) {
-    return res.status(400).json({ message: "Title should not exceed 100 characters" });
+    return res
+      .status(400)
+      .json({ message: "Title should not exceed 100 characters" });
   }
 
   const foundItemIndex = todoLists.findIndex((item) => item.id === id);
@@ -91,8 +96,37 @@ app.delete("/todo-lists/:id", (req, res) => {
   });
 });
 
+// Обработка запросов для tasks
+const tasks = {};
+
+app.post("/todo-lists/:todolistId/tasks", (req, res) => {
+  const { todolistId } = req.params;
+  const { title } = req.body;
+
+  if (title.length > 500) {
+    return res
+      .status(400)
+      .json({ message: "Title should not exceed 500 characters" });
+  }
+
+  const todoListExists = todoLists.some(
+    (todoList) => todoList.id === todolistId
+  );
+  if (!todoListExists) {
+    return res.status(404).json({ message: "TodoList not found" });
+  }
+
+  const newTask = { id: uuidv1(), title, isDone: false };
+
+  if (!tasks[todolistId]) {
+    tasks[todolistId] = [];
+  }
+  tasks[todolistId].unshift(newTask);
+
+  res.json({ data: newTask });
+});
+
 const port = process.env.PORT || 3001;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
-
