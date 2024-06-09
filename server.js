@@ -99,6 +99,11 @@ app.delete("/todo-lists/:id", (req, res) => {
 // Обработка запросов для tasks
 const tasks = {};
 
+app.get("/todo-lists/:todolistId/tasks", (req, res) => {
+  const { todolistId } = req.params;
+  res.json({data: tasks[todolistId] || []});
+});
+
 app.post("/todo-lists/:todolistId/tasks", (req, res) => {
   const { todolistId } = req.params;
   const { title } = req.body;
