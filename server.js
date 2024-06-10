@@ -5,7 +5,9 @@ const { v1: uuidv1 } = require("uuid");
 
 const app = express();
 
-const allowedOrigins = [
+app.use(cors()); // Разрешить все источники
+
+/* const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:6006",
   "http://192.168.100.4:6006",
@@ -21,7 +23,7 @@ app.use(
       }
     },
   })
-);
+); */
 
 app.use(bodyParser.json());
 
@@ -63,7 +65,7 @@ app.put("/todo-lists/:id", (req, res) => {
   const foundItemIndex = todoLists.findIndex((item) => item.id === id);
 
   if (foundItemIndex === -1) {
-    return res.status(404).json({ message: "Task not found" });
+    return res.status(404).json({ message: "TodoList not found" });
   }
 
   const updatedItem = { ...todoLists[foundItemIndex], title };
@@ -101,7 +103,7 @@ const tasks = {};
 
 app.get("/todo-lists/:todolistId/tasks", (req, res) => {
   const { todolistId } = req.params;
-  res.json({data: tasks[todolistId] || []});
+  res.json({ data: tasks[todolistId] || [] });
 });
 
 app.post("/todo-lists/:todolistId/tasks", (req, res) => {
@@ -129,6 +131,41 @@ app.post("/todo-lists/:todolistId/tasks", (req, res) => {
   tasks[todolistId].unshift(newTask);
 
   res.json({ data: newTask });
+});
+
+app.put("/todo-lists/:todoListId/tasks/:taskId", (req, res) => {
+  const { todoListId, taskId } = req.params;
+  const { title } = req.body;
+
+  if (title.length > 500) {
+    return res
+      .status(400)
+      .json({ message: "Title should not exceed 500 characters" });
+  }
+
+  const foundTodoListIndex = todoLists.findIndex(
+    (item) => item.id === todoListId
+  );
+
+  if (foundTodoListIndex === -1) {
+    return res.status(404).json({ message: "TodoList not found" });
+  }
+
+  const foundTaskIndex = tasks[todoListId].findIndex(
+    (item) => item.id === taskId
+  );
+
+  if (foundTaskIndex === -1) {
+    return res.status(404).json({ message: "Task not found" });
+  }
+
+  const todoListTasks = tasks[todoListId];
+  const updatedItem = { ...todoListTasks[foundTaskIndex], title: title };
+  tasks[todoListId][foundTaskIndex] = updatedItem;
+
+  res.json({
+    data: { ...updatedItem },
+  });
 });
 
 const port = process.env.PORT || 3001;
