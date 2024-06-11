@@ -84,17 +84,17 @@ app.delete("/todo-lists/:id", (req, res) => {
   if (foundItemIndex === -1) {
     return res.status(404).json({
       resultCode: 1,
-      messages: ["Task not found"],
+      messages: ["TodoList not found"],
       data: {},
     });
   }
 
-  const deletedItem = todoLists.splice(foundItemIndex, 1)[0];
+  const deletedTodoList = todoLists.splice(foundItemIndex, 1)[0];
 
   res.json({
     resultCode: 0,
     messages: ["TodoList successfully deleted"],
-    data: { ...deletedItem },
+    data: { ...deletedTodoList },
   });
 });
 
@@ -165,6 +165,42 @@ app.put("/todo-lists/:todoListId/tasks/:taskId", (req, res) => {
 
   res.json({
     data: { ...updatedItem },
+  });
+});
+
+app.delete("/todo-lists/:todoListId/tasks/:taskId", (req, res) => {
+  const { todoListId, taskId } = req.params;
+
+  const foundTodoListIndex = todoLists.findIndex(
+    (item) => item.id === todoListId
+  );
+
+  if (foundTodoListIndex === -1) {
+    return res.status(404).json({
+      resultCode: 1,
+      messages: ["TodoList not found"],
+      data: {},
+    });
+  }
+
+  const foundTaskIndex = tasks[todoListId].findIndex(
+    (item) => item.id === taskId
+  );
+
+  if (foundTaskIndex === -1) {
+    return res.status(404).json({
+      resultCode: 1,
+      messages: ["Task not found"],
+      data: {},
+    });
+  }
+
+  const deletedTask = tasks[todoListId].splice(foundTaskIndex, 1)[0];
+
+  res.json({
+    resultCode: 0,
+    messages: ["Task successfully deleted"],
+    data: { ...deletedTask },
   });
 });
 
