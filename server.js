@@ -27,9 +27,10 @@ app.use(
 
 app.use(bodyParser.json());
 
-//Обработка запросов для todoLists
 const todoLists = [];
+const tasks = {};
 
+//Обработка запросов для todoLists
 app.get("/todo-lists", (req, res) => {
   res.json(todoLists);
 });
@@ -90,6 +91,7 @@ app.delete("/todo-lists/:id", (req, res) => {
   }
 
   const deletedTodoList = todoLists.splice(foundItemIndex, 1)[0];
+  tasks[id] = [];
 
   res.json({
     resultCode: 0,
@@ -99,8 +101,6 @@ app.delete("/todo-lists/:id", (req, res) => {
 });
 
 // Обработка запросов для tasks
-const tasks = {};
-
 app.get("/todo-lists/:todolistId/tasks", (req, res) => {
   const { todolistId } = req.params;
   res.json({ data: tasks[todolistId] || [] });
