@@ -91,7 +91,7 @@ app.delete("/todo-lists/:id", (req, res) => {
   }
 
   const deletedTodoList = todoLists.splice(foundItemIndex, 1)[0];
-  tasks[id] = [];
+  delete tasks[id];
 
   res.json({
     resultCode: 0,
