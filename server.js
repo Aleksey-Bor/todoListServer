@@ -135,9 +135,9 @@ app.post("/todo-lists/:todolistId/tasks", (req, res) => {
 
 app.put("/todo-lists/:todoListId/tasks/:taskId", (req, res) => {
   const { todoListId, taskId } = req.params;
-  const { title } = req.body;
+  const { title, isDone } = req.body;
 
-  if (title.length > 500) {
+  if (title && title.length > 500) {
     return res
       .status(400)
       .json({ message: "Title should not exceed 500 characters" });
@@ -160,7 +160,17 @@ app.put("/todo-lists/:todoListId/tasks/:taskId", (req, res) => {
   }
 
   const todoListTasks = tasks[todoListId];
-  const updatedItem = { ...todoListTasks[foundTaskIndex], title: title };
+  const updatedItem = { ...todoListTasks[foundTaskIndex] };
+
+  if (title !== undefined) {
+    updatedItem.title = title;
+  }
+
+  if (isDone !== undefined) {
+    updatedItem.isDone = !updatedItem.isDone;
+  }
+  
+
   tasks[todoListId][foundTaskIndex] = updatedItem;
 
   res.json({
